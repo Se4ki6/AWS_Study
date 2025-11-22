@@ -4,14 +4,16 @@
 // S3バケット名
 // 注意: バケット名はAWS全体で一意である必要があるため、
 // 適切な命名規則 (組織名-プロジェクト名-環境-日付など) を使用すること
-bucket_name = "my-unique-bucket-name-20251122"
+bucket_name = "sekishiro-bucket-example-01"
 
 // 環境名
 // dev: 開発環境, staging: ステージング環境, prod: 本番環境
 environment = "dev"
 
-// アップロードするローカルファイルのパス
-source_path = "upload_file/example.txt"
+// アップロードするファイルが格納されているフォルダのパス
+// このフォルダ内の全ファイルが自動的にアップロードされる
+upload_folder = "upload_file"
 
-// S3バケット内でのオブジェクトキー (ファイル名)
-object_key = "example.txt"
+// S3内でのファイルのプレフィックス (オプション)
+// 例: "uploaded/" とすると、S3内で uploaded/ フォルダに配置される
+s3_prefix = "" // 空文字列の場合はバケットのルートにアップロード

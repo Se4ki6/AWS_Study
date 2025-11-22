@@ -72,7 +72,7 @@ resource "aws_s3_bucket_public_access_block" "main" {
 
   // 以下4つの設定を有効化することにより、バケットが完全にプライベートであることを保証
   // 新しいパブリックACL (Access Control List) の適用をブロック
-  block_public_acls = true
+  block_public_acls = true //【ToDo】三項演算子で開発と本番で変える変更をしたい
   // 新しいパブリックバケットポリシーの適用をブロック
   block_public_policy = true
   // 既存のパブリックACLを無視する
@@ -81,44 +81,34 @@ resource "aws_s3_bucket_public_access_block" "main" {
   restrict_public_buckets = true
 }
 
-// ローカルのファイルをAWS S3バケットにアップロードする設定 (旧バージョン - 非推奨)
-// resource "aws_s3_bucket_object" "upload_file" {
-//   // アップロード先のS3バケット名を指定
-//   bucket = aws_s3_bucket.example.id
-//
-//   // S3内でのオブジェクトのキー (パス) を指定
-//   key = var.object_key // variables.tf で定義されている変数から値を取得
-//
-//   // ローカルのファイルパスを指定
-//   source = var.source_path // variables.tf で定義されている変数から値を取得
-//
-//   // filemd5ハッシュを計算して整合性を検証
-//   etag = filemd5(var.source_path)
-//
-//   // コンテンツタイプを指定 (MIMEタイプ)
-//   content_type = "text/plain"
-//   # アクセス制御をprivateに設定
-//   acl = "private"
-// }
-
 // ローカルのファイルをAWS S3バケットにアップロードする設定 (推奨版)
 // aws_s3_object は aws_s3_bucket_object の後継リソース
+// fileset関数で指定フォルダ内の全ファイルを自動検出してアップロード
 resource "aws_s3_object" "upload_file" {
+  // fileset関数でフォルダ内の全ファイルを取得し、for_eachで各ファイルに対してリソースを作成
+  // fileset(path, pattern) - 指定パスから指定パターンに一致するファイルを取得
+  // "**" は全サブディレクトリを再帰的に検索
+  for_each = fileset(var.upload_folder, "**")
+
   // アップロード先のS3バケット名を指定
   bucket = aws_s3_bucket.example.id
 
   // S3内でのオブジェクトのキー (パス) を指定
-  key = var.object_key // variables.tf で定義されている変数から値を取得
+  // each.value にはファイルの相対パス (例: "example.txt" や "subfolder/file.txt")
+  // s3_prefix を結合してS3内のパスを構成
+  key = var.s3_prefix == "" ? each.value : "${var.s3_prefix}/${each.value}"
 
   // ローカルのファイルパスを指定
-  source = var.source_path // variables.tf で定義されている変数から値を取得
+  // upload_folder と相対パスを結合して完全なパスを構成
+  source = "${var.upload_folder}/${each.value}"
 
   // filemd5ハッシュを計算して整合性を検証
-  etag = filemd5(var.source_path)
+  etag = filemd5("${var.upload_folder}/${each.value}")
 
   // コンテンツタイプを指定 (MIMEタイプ)
   content_type = "text/plain"
 
   // 注意: aclパラメータは削除
   // バケットのパブリックアクセスブロック設定により、デフォルトでprivateになります
+  // acl = "private"
 }

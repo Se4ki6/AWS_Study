@@ -15,16 +15,18 @@ variable "environment" {
   default     = "dev"  // デフォルト値は "dev" (開発環境)
 }
 
-// S3にアップロードするローカルファイルのパス
-variable "source_path" {
-  description = "アップロードするローカルファイルのパス"
+// S3にアップロードするファイルが格納されているローカルフォルダのパス
+// このフォルダ内の全ファイルが自動的にS3にアップロードされる
+variable "upload_folder" {
+  description = "アップロードするファイルが格納されているフォルダのパス"
   type        = string
-  default     = "upload_file/example.txt"
+  default     = "upload_file"
 }
 
-// S3バケット内でのオブジェクトキー (ファイル名)
-variable "object_key" {
-  description = "S3バケット内でのオブジェクトキー (ファイルパス)"
+// S3にアップロードする際のプレフィックス (フォルダパス)
+// 空文字列の場合はバケットのルートにアップロードされる
+variable "s3_prefix" {
+  description = "S3内でのファイルのプレフィックス (フォルダパス)"
   type        = string
-  default     = "example.txt"
+  default     = "" // デフォルトはルート
 }
