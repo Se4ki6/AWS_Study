@@ -1,6 +1,7 @@
 // S3バケット名の変数定義
 // バケット名はAWS全体でグローバルに一意である必要がある
 variable "bucket_name" {
+  // コンソール上での説明表示用
   description = "S3バケットの名前"
   type        = string // 文字列型
   // デフォルト値なし = 必須パラメータ
@@ -16,7 +17,7 @@ variable "environment" {
 
 // S3にアップロードするローカルファイルのパス
 variable "source_path" {
-  description = "upload_file/example.txt"
+  description = "アップロードするローカルファイルのパス"
   type        = string
   default     = "upload_file/example.txt"
 }
