@@ -859,20 +859,38 @@ terraform apply -replace="aws_s3_object.upload_images[\"filename.png\"]"
 
 ---
 
-### ステップ 2: 画像専用プレフィックスの設定 ⏳ 未実装
+### ステップ 2: 画像専用プレフィックスの設定 ✅ 完了
 
-**実装予定内容**:
+**実装日**: 2025-11-29
 
-- `variables.tf` に画像用の変数を追加
-- `main.tf` に画像アップロード設定を追加
-- `upload_file/images/` ディレクトリの作成
-- `outputs.tf` に画像パス情報を追加
+**実装内容**:
+
+- ✅ `variables.tf` に画像用の変数を追加
+
+  - `images_prefix`: 画像ファイルの S3 プレフィックス（デフォルト: images）
+  - `images_upload_folder`: ローカルの画像フォルダパス（デフォルト: upload_file/images）
+  - `enable_images_upload`: 画像アップロードの有効化フラグ（デフォルト: true）
+
+- ✅ `main.tf` に画像アップロード設定を追加
+
+  - `aws_s3_object.upload_images`: 画像専用のアップロードリソース
+  - 画像用の Content-Type 自動判定（png, jpg, gif, svg, webp 等）
+  - 長期キャッシュ設定（1 年、immutable）
+
+- ✅ `upload_file/images/` ディレクトリの作成
+
+  - `.gitkeep` ファイルでディレクトリを追跡
+
+- ✅ `outputs.tf` に画像パス情報を追加
+  - `images_base_path`: S3 内の画像ベースパス
+  - `uploaded_images`: アップロードされた画像一覧
+  - `images_base_url`: 画像アクセス用のベース URL
 
 **次のステップ**:
-ステップ 2 を実行する場合は、以下のプロンプトを使用してください:
+ステップ 3 を実行する場合は、以下のプロンプトを使用してください:
 
 ```
-ステップ2を実行してください。
+ステップ3を実行してください。
 進捗状況を同マークダウンファイルに追記してください。
 ```
 

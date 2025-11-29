@@ -60,3 +60,25 @@ output "iam_role_arn" {
   description = "IAMロールARN"
   value       = var.create_iam_role ? aws_iam_role.s3_presigned_url_role[0].arn : null
 }
+
+// ==============================================================================
+// 画像ファイル関連の出力 (ステップ2)
+// ==============================================================================
+
+// 画像用のベースパス
+output "images_base_path" {
+  description = "S3内の画像ファイルのベースパス"
+  value       = var.images_prefix
+}
+
+// アップロードされた画像ファイルのリスト
+output "uploaded_images" {
+  description = "アップロードされた画像ファイルのキー一覧"
+  value       = var.enable_images_upload ? [for obj in aws_s3_object.upload_images : obj.key] : []
+}
+
+// 画像アクセス用のベースURL
+output "images_base_url" {
+  description = "S3内の画像ファイルのベースURL（署名付きURLのベース）"
+  value       = "s3://${aws_s3_bucket.example.id}/${var.images_prefix}/"
+}

@@ -5,3 +5,17 @@
 .terraform.lock.hcl
 terraform.tfvars
 .github/
+
+# 環境変数ファイル（認証情報を含む）
+scripts/.env
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 画像ファイル（imagesフォルダ内）
+upload_file/images/*
+!upload_file/images/.gitkeep

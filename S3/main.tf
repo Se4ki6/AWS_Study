@@ -15,6 +15,8 @@ terraform {
 provider "aws" {
   // regionを指定
   region = "ap-southeast-2"
+  // SSO プロファイルを使用
+  profile = "AdministratorAccess-339126664118"
 }
 
 // S3バケットの作成
@@ -223,4 +225,43 @@ resource "aws_s3_object" "upload_file" {
   // バケットのパブリックアクセスブロック設定により、デフォルトでprivateになります
   // 静的ウェブサイトホスティングの場合はバケットポリシーでパブリックアクセスを許可
   // acl = "private"
+}
+
+// ==============================================================================
+// 画像ファイル専用のアップロード設定 (ステップ2)
+// ==============================================================================
+
+// 画像専用プレフィックス (images/) 配下に画像をアップロード
+// 署名付きURLで画像を配信する際に使用
+resource "aws_s3_object" "upload_images" {
+  // 画像アップロードが有効で、かつ画像フォルダが存在する場合のみ実行
+  for_each = var.enable_images_upload ? fileset(var.images_upload_folder, "**") : []
+
+  bucket = aws_s3_bucket.example.id
+
+  // images/配下に配置
+  key = "${var.images_prefix}/${each.value}"
+
+  source = "${var.images_upload_folder}/${each.value}"
+
+  etag = filemd5("${var.images_upload_folder}/${each.value}")
+
+  // 画像のContent-Type設定
+  content_type = lookup({
+    "png"  = "image/png",
+    "jpg"  = "image/jpeg",
+    "jpeg" = "image/jpeg",
+    "gif"  = "image/gif",
+    "svg"  = "image/svg+xml",
+    "webp" = "image/webp",
+    "ico"  = "image/x-icon",
+    "bmp"  = "image/bmp",
+    "tiff" = "image/tiff",
+    "tif"  = "image/tiff"
+  }, lower(split(".", each.value)[length(split(".", each.value)) - 1]), "application/octet-stream")
+
+  // 画像は長期キャッシュ（1年）- CloudFrontやブラウザキャッシュで効果的
+  cache_control = "max-age=31536000, immutable"
+
+  // 注意: このリソースはプライベートとして扱われ、署名付きURLでのみアクセス可能
 }

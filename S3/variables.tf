@@ -58,3 +58,28 @@ variable "iam_role_service" {
   type        = string
   default     = "lambda.amazonaws.com"
 }
+
+// ==============================================================================
+// 画像専用プレフィックス設定 (ステップ2)
+// ==============================================================================
+
+// 画像ファイル専用のS3プレフィックス
+variable "images_prefix" {
+  description = "画像ファイルをアップロードするS3プレフィックス（フォルダパス）"
+  type        = string
+  default     = "images"
+}
+
+// 画像ファイルが格納されているローカルフォルダ
+variable "images_upload_folder" {
+  description = "画像ファイルが格納されているローカルフォルダのパス"
+  type        = string
+  default     = "upload_file/images"
+}
+
+// 画像アップロードを有効にするかどうか
+variable "enable_images_upload" {
+  description = "画像専用フォルダからのアップロードを有効にするかどうか"
+  type        = bool
+  default     = true
+}
