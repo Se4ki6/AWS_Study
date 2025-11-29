@@ -30,3 +30,31 @@ variable "s3_prefix" {
   type        = string
   default     = "" // デフォルトはルート
 }
+
+// 静的ウェブサイトホスティングを有効にするかどうか
+variable "enable_website_hosting" {
+  description = "静的ウェブサイトホスティングを有効にするかどうか"
+  type        = bool
+  default     = false
+}
+
+// IAMユーザーを作成するかどうか（ローカル開発用）
+variable "create_iam_user" {
+  description = "IAMユーザーを作成するかどうか（ローカル開発用）"
+  type        = bool
+  default     = true
+}
+
+// IAMロールを作成するかどうか（Lambda/EC2用）
+variable "create_iam_role" {
+  description = "IAMロールを作成するかどうか（Lambda/EC2用）"
+  type        = bool
+  default     = false
+}
+
+// IAMロールのサービスプリンシパル
+variable "iam_role_service" {
+  description = "IAMロールの使用サービス（lambda.amazonaws.com or ec2.amazonaws.com）"
+  type        = string
+  default     = "lambda.amazonaws.com"
+}
