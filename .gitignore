@@ -5,6 +5,7 @@
 .terraform.lock.hcl
 terraform.tfvars
 .github/
+terraform.tfvars
 
 # 環境変数ファイル（認証情報を含む）
 scripts/.env
