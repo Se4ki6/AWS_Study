@@ -4,9 +4,9 @@
 
 ## 📚 目次
 
-1. [CloudFrontとは](#cloudfrontとは)
+1. [CloudFront とは](#cloudfrontとは)
 2. [基本概念](#基本概念)
-3. [S3との連携](#s3との連携)
+3. [S3 との連携](#s3との連携)
 4. [セキュリティ設定](#セキュリティ設定)
 5. [キャッシュ戦略](#キャッシュ戦略)
 6. [カスタムドメイン・SSL](#カスタムドメインssl)
@@ -17,15 +17,15 @@
 
 ---
 
-## CloudFrontとは
+## CloudFront とは
 
-Amazon CloudFrontは、AWSが提供するコンテンツ配信ネットワーク（CDN）サービスです。
+Amazon CloudFront は、AWS が提供するコンテンツ配信ネットワーク（CDN）サービスです。
 
 ### 主な特徴
 
-- **グローバル配信**: 世界中に分散された400以上のエッジロケーションから高速にコンテンツを配信
+- **グローバル配信**: 世界中に分散された 400 以上のエッジロケーションから高速にコンテンツを配信
 - **低レイテンシ**: ユーザーに最も近いエッジロケーションからコンテンツを配信
-- **セキュリティ**: DDoS対策、WAF統合、SSL/TLS暗号化をサポート
+- **セキュリティ**: DDoS 対策、WAF 統合、SSL/TLS 暗号化をサポート
 - **柔軟な料金体系**: 転送量に応じた従量課金
 
 ### 使用ケース
@@ -42,10 +42,11 @@ Amazon CloudFrontは、AWSが提供するコンテンツ配信ネットワーク
 
 ### ディストリビューション
 
-CloudFrontの基本単位。コンテンツ配信の設定を管理します。
+CloudFront の基本単位。コンテンツ配信の設定を管理します。
 
 **種類**:
-- **Web ディストリビューション**: 一般的なWebコンテンツ配信
+
+- **Web ディストリビューション**: 一般的な Web コンテンツ配信
 - **RTMP ディストリビューション**: ストリーミングメディア配信（廃止予定）
 
 ### オリジン
@@ -53,16 +54,18 @@ CloudFrontの基本単位。コンテンツ配信の設定を管理します。
 コンテンツの元となるサーバーです。
 
 **サポートされるオリジン**:
-- Amazon S3バケット
-- EC2インスタンス
+
+- Amazon S3 バケット
+- EC2 インスタンス
 - Elastic Load Balancer
-- カスタムHTTP/HTTPSサーバー
+- カスタム HTTP/HTTPS サーバー
 
 ### エッジロケーション
 
 コンテンツがキャッシュされる世界各地のデータセンターです。
 
 **リージョナルエッジキャッシュ**:
+
 - エッジロケーションとオリジンの間にある中間キャッシュ層
 - より大容量のキャッシュを保持
 
@@ -80,7 +83,7 @@ CloudFrontの基本単位。コンテンツ配信の設定を管理します。
 
 ---
 
-## S3との連携
+## S3 との連携
 
 ### 基本的な構成
 
@@ -92,22 +95,24 @@ CloudFront（エッジロケーション）
 S3バケット（オリジン）
 ```
 
-### S3バケットをオリジンとして設定
+### S3 バケットをオリジンとして設定
 
 **必要な設定**:
 
-1. **S3バケットの作成**
-   - パブリックアクセスはブロック（推奨）
-   - CloudFrontからのアクセスのみ許可
+1. **S3 バケットの作成**
 
-2. **CloudFrontディストリビューションの作成**
+   - パブリックアクセスはブロック（推奨）
+   - CloudFront からのアクセスのみ許可
+
+2. **CloudFront ディストリビューションの作成**
+
    ```hcl
    # Terraformの例
    resource "aws_cloudfront_distribution" "s3_distribution" {
      origin {
        domain_name = aws_s3_bucket.website.bucket_regional_domain_name
        origin_id   = "S3-my-bucket"
-       
+
        s3_origin_config {
          origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
        }
@@ -116,19 +121,19 @@ S3バケット（オリジン）
    ```
 
 3. **バケットポリシーの設定**
-   - CloudFront OAI/OACからのアクセスを許可
+   - CloudFront OAI/OAC からのアクセスを許可
 
 ### ウェブサイトホスティングの設定
 
-**S3ウェブサイトエンドポイント vs リージョナルエンドポイント**:
+**S3 ウェブサイトエンドポイント vs リージョナルエンドポイント**:
 
-| 項目 | ウェブサイトエンドポイント | リージョナルエンドポイント |
-|------|---------------------------|---------------------------|
-| URL形式 | `bucket-name.s3-website-region.amazonaws.com` | `bucket-name.s3.region.amazonaws.com` |
-| インデックスドキュメント | 自動対応 | CloudFrontで設定必要 |
-| エラードキュメント | 自動リダイレクト | CloudFrontで設定必要 |
-| OAI/OAC | 非対応 | 対応 |
-| セキュリティ | 低（パブリックアクセス必要） | 高（プライベート可） |
+| 項目                     | ウェブサイトエンドポイント                    | リージョナルエンドポイント            |
+| ------------------------ | --------------------------------------------- | ------------------------------------- |
+| URL 形式                 | `bucket-name.s3-website-region.amazonaws.com` | `bucket-name.s3.region.amazonaws.com` |
+| インデックスドキュメント | 自動対応                                      | CloudFront で設定必要                 |
+| エラードキュメント       | 自動リダイレクト                              | CloudFront で設定必要                 |
+| OAI/OAC                  | 非対応                                        | 対応                                  |
+| セキュリティ             | 低（パブリックアクセス必要）                  | 高（プライベート可）                  |
 
 **推奨**: リージョナルエンドポイント + OAC
 
@@ -138,8 +143,9 @@ S3バケット（オリジン）
 
 ### Origin Access Control (OAC)
 
-**OACとは**:
-- S3バケットへの直接アクセスを防ぎ、CloudFront経由のみでアクセスを許可
+**OAC とは**:
+
+- S3 バケットへの直接アクセスを防ぎ、CloudFront 経由のみでアクセスを許可
 - OAI（Origin Access Identity）の後継で、より強力なセキュリティ
 
 **設定方法**:
@@ -190,14 +196,15 @@ resource "aws_s3_bucket_policy" "cloudfront_access" {
 
 ### AWS WAF（Web Application Firewall）
 
-CloudFrontと統合してセキュリティを強化します。
+CloudFront と統合してセキュリティを強化します。
 
 **主な機能**:
-- SQLインジェクション対策
+
+- SQL インジェクション対策
 - クロスサイトスクリプティング（XSS）対策
 - レート制限
 - 地域ブロック
-- IPアドレスブロック/許可
+- IP アドレスブロック/許可
 
 **基本設定**:
 
@@ -240,11 +247,12 @@ resource "aws_wafv2_web_acl" "cloudfront_waf" {
 }
 ```
 
-### SSL/TLS証明書
+### SSL/TLS 証明書
 
 **オプション**:
 
-1. **CloudFrontデフォルト証明書**
+1. **CloudFront デフォルト証明書**
+
    - `*.cloudfront.net` ドメイン用
    - 無料
    - カスタムドメインには使用不可
@@ -252,7 +260,7 @@ resource "aws_wafv2_web_acl" "cloudfront_waf" {
 2. **AWS Certificate Manager（ACM）証明書**
    - カスタムドメイン用
    - 無料
-   - **重要**: us-east-1リージョンで作成する必要がある
+   - **重要**: us-east-1 リージョンで作成する必要がある
 
 ```hcl
 # ACM証明書（us-east-1リージョンで作成）
@@ -307,12 +315,14 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 ### キャッシュの基本
 
 **キャッシュのメリット**:
+
 - オリジンへの負荷軽減
 - レスポンス時間の短縮
 - データ転送コストの削減
 
 **キャッシュキー**:
 リクエストを識別するための要素
+
 - URL
 - クエリ文字列
 - リクエストヘッダー
@@ -334,14 +344,14 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
 **推奨設定**:
 
-| コンテンツタイプ | TTL | 理由 |
-|-----------------|-----|------|
-| 静的画像・CSS・JS | 1年（31536000秒） | 変更頻度が低い |
-| HTML | 短め（1時間〜1日） | 更新が必要 |
-| API レスポンス | 0〜短時間 | 動的データ |
-| 動画 | 長め（1週間〜1ヶ月） | サイズが大きい |
+| コンテンツタイプ  | TTL                    | 理由           |
+| ----------------- | ---------------------- | -------------- |
+| 静的画像・CSS・JS | 1 年（31536000 秒）    | 変更頻度が低い |
+| HTML              | 短め（1 時間〜1 日）   | 更新が必要     |
+| API レスポンス    | 0〜短時間              | 動的データ     |
+| 動画              | 長め（1 週間〜1 ヶ月） | サイズが大きい |
 
-### Cache-Controlヘッダー
+### Cache-Control ヘッダー
 
 オリジンから送信するヘッダーでキャッシュを制御します。
 
@@ -351,6 +361,7 @@ Cache-Control: public, max-age=31536000, immutable
 ```
 
 **主要なディレクティブ**:
+
 - `public`: 任意のキャッシュでキャッシュ可能
 - `private`: ブラウザのみキャッシュ可能
 - `no-cache`: キャッシュ前に再検証が必要
@@ -362,7 +373,8 @@ Cache-Control: public, max-age=31536000, immutable
 
 再利用可能なキャッシュ設定のテンプレートです。
 
-**AWSマネージド ポリシー**:
+**AWS マネージド ポリシー**:
+
 - `CachingOptimized`: 静的コンテンツ向け
 - `CachingDisabled`: キャッシュ無効
 - `CachingOptimizedForUncompressedObjects`: 圧縮されていないオブジェクト向け
@@ -414,8 +426,9 @@ aws cloudfront create-invalidation \
 ```
 
 **注意点**:
-- 月1000回まで無料、それ以降は有料
-- ワイルドカード（`/*`）は1パスとしてカウント
+
+- 月 1000 回まで無料、それ以降は有料
+- ワイルドカード（`/*`）は 1 パスとしてカウント
 - 頻繁な無効化よりバージョニングを推奨
 
 **バージョニング戦略**:
@@ -435,7 +448,7 @@ style.abc123.css
 
 ### カスタムドメインの設定手順
 
-1. **ACM証明書の作成**（us-east-1リージョン）
+1. **ACM 証明書の作成**（us-east-1 リージョン）
 
 ```hcl
 resource "aws_acm_certificate" "cert" {
@@ -445,9 +458,9 @@ resource "aws_acm_certificate" "cert" {
 }
 ```
 
-2. **DNS検証**
+2. **DNS 検証**
 
-証明書の検証用DNSレコードを追加します。
+証明書の検証用 DNS レコードを追加します。
 
 ```hcl
 resource "aws_route53_record" "cert_validation" {
@@ -467,7 +480,7 @@ resource "aws_route53_record" "cert_validation" {
 }
 ```
 
-3. **CloudFrontに証明書を適用**
+3. **CloudFront に証明書を適用**
 
 ```hcl
 resource "aws_cloudfront_distribution" "s3_distribution" {
@@ -481,7 +494,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 }
 ```
 
-4. **DNSレコードの設定**
+4. **DNS レコードの設定**
 
 ```hcl
 resource "aws_route53_record" "www" {
@@ -497,11 +510,11 @@ resource "aws_route53_record" "www" {
 }
 ```
 
-### SSL/TLSのベストプラクティス
+### SSL/TLS のベストプラクティス
 
-- **最小プロトコルバージョン**: TLSv1.2以上を使用
+- **最小プロトコルバージョン**: TLSv1.2 以上を使用
 - **SNI（Server Name Indication）**: `sni-only`を推奨（コスト削減）
-- **証明書の更新**: ACMは自動更新（DNS検証レコードを維持）
+- **証明書の更新**: ACM は自動更新（DNS 検証レコードを維持）
 
 ---
 
@@ -538,7 +551,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
 ### SPA（Single Page Application）対応
 
-React、Vue、Angularなどのクライアントサイドルーティング対応。
+React、Vue、Angular などのクライアントサイドルーティング対応。
 
 ```hcl
 resource "aws_cloudfront_distribution" "spa" {
@@ -567,10 +580,11 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 ```
 
 **制限事項**:
+
 - ルート（`/`）のみに適用
 - サブディレクトリ（`/about/`）には適用されない
 
-**解決策**: Lambda@Edgeでディレクトリリクエストをリライト
+**解決策**: Lambda@Edge でディレクトリリクエストをリライト
 
 ---
 
@@ -578,7 +592,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
 ### 圧縮
 
-CloudFrontでコンテンツを自動圧縮してデータ転送量を削減します。
+CloudFront でコンテンツを自動圧縮してデータ転送量を削減します。
 
 ```hcl
 resource "aws_cloudfront_distribution" "s3_distribution" {
@@ -589,15 +603,16 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 ```
 
 **圧縮されるコンテンツタイプ**:
+
 - text/html
 - text/css
 - application/javascript
 - application/json
 - text/xml
 
-### HTTP/2とHTTP/3
+### HTTP/2 と HTTP/3
 
-最新のHTTPプロトコルで通信を高速化します。
+最新の HTTP プロトコルで通信を高速化します。
 
 ```hcl
 resource "aws_cloudfront_distribution" "s3_distribution" {
@@ -606,10 +621,11 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 ```
 
 **メリット**:
+
 - 多重化により複数リソースを並列取得
 - ヘッダー圧縮
 - サーバープッシュ（HTTP/2）
-- QUICプロトコル（HTTP/3）
+- QUIC プロトコル（HTTP/3）
 
 ### Price Class（料金クラス）
 
@@ -623,11 +639,11 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
 **料金クラス**:
 
-| クラス | 対象地域 | 用途 |
-|--------|---------|------|
-| `PriceClass_All` | すべての地域 | グローバル配信 |
-| `PriceClass_200` | 北米・ヨーロッパ・アジア・中東・アフリカ | 一般的な用途 |
-| `PriceClass_100` | 北米・ヨーロッパ | コスト重視 |
+| クラス           | 対象地域                                 | 用途           |
+| ---------------- | ---------------------------------------- | -------------- |
+| `PriceClass_All` | すべての地域                             | グローバル配信 |
+| `PriceClass_200` | 北米・ヨーロッパ・アジア・中東・アフリカ | 一般的な用途   |
+| `PriceClass_100` | 北米・ヨーロッパ                         | コスト重視     |
 
 ### Origin Shield
 
@@ -648,6 +664,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 ```
 
 **メリット**:
+
 - キャッシュヒット率の向上
 - オリジンへのリクエスト数削減
 - リージョン間のデータ転送コスト削減
@@ -658,14 +675,14 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
 ## コスト管理
 
-### CloudFrontの料金体系
+### CloudFront の料金体系
 
 **主な課金項目**:
 
 1. **データ転送量（アウト）**: エッジロケーションからユーザーへの転送
-2. **HTTPSリクエスト数**: リクエストごとの課金
-3. **無効化リクエスト**: 月1000回以降は有料
-4. **専用IPカスタムSSL**: 使用する場合は月額料金
+2. **HTTPS リクエスト数**: リクエストごとの課金
+3. **無効化リクエスト**: 月 1000 回以降は有料
+4. **専用 IP カスタム SSL**: 使用する場合は月額料金
 
 ### コスト最適化のベストプラクティス
 
@@ -688,7 +705,7 @@ default_cache_behavior {
 }
 ```
 
-**3. 適切なPrice Classの選択**
+**3. 適切な Price Class の選択**
 
 ```hcl
 price_class = "PriceClass_100"  # 必要な地域のみ
@@ -699,14 +716,14 @@ price_class = "PriceClass_100"  # 必要な地域のみ
 - バージョニングを使用
 - ワイルドカードで一括無効化
 
-**5. S3からCloudFrontへの転送は無料**
+**5. S3 から CloudFront への転送は無料**
 
-- オリジンがS3の場合、S3→CloudFront間のデータ転送料金は無料
-- ただしS3のストレージ料金とリクエスト料金は発生
+- オリジンが S3 の場合、S3→CloudFront 間のデータ転送料金は無料
+- ただし S3 のストレージ料金とリクエスト料金は発生
 
 ### コスト監視
 
-**CloudWatchメトリクス**:
+**CloudWatch メトリクス**:
 
 ```hcl
 resource "aws_cloudwatch_metric_alarm" "high_cost" {
@@ -723,7 +740,8 @@ resource "aws_cloudwatch_metric_alarm" "high_cost" {
 ```
 
 **AWS Cost Explorer**:
-- CloudFrontの使用状況を可視化
+
+- CloudFront の使用状況を可視化
 - 地域別・サービス別のコスト分析
 
 ---
@@ -735,8 +753,9 @@ resource "aws_cloudwatch_metric_alarm" "high_cost" {
 #### 1. 403 Forbidden エラー
 
 **原因**:
-- S3バケットポリシーが正しく設定されていない
-- OAI/OACの設定ミス
+
+- S3 バケットポリシーが正しく設定されていない
+- OAI/OAC の設定ミス
 - オブジェクトが存在しない
 
 **解決方法**:
@@ -755,8 +774,9 @@ aws s3 ls s3://your-bucket-name/ --recursive
 #### 2. キャッシュが更新されない
 
 **原因**:
-- TTLが長すぎる
-- Cache-Controlヘッダーの設定ミス
+
+- TTL が長すぎる
+- Cache-Control ヘッダーの設定ミス
 
 **解決方法**:
 
@@ -772,11 +792,12 @@ aws cloudfront create-invalidation \
   --paths "/index.html" "/css/style.css"
 ```
 
-#### 3. SSL証明書のエラー
+#### 3. SSL 証明書のエラー
 
 **原因**:
-- 証明書がus-east-1リージョンにない
-- DNS検証が完了していない
+
+- 証明書が us-east-1 リージョンにない
+- DNS 検証が完了していない
 - ドメイン名が一致していない
 
 **解決方法**:
@@ -794,8 +815,9 @@ aws acm describe-certificate \
 #### 4. カスタムドメインでアクセスできない
 
 **原因**:
-- DNSレコードの設定ミス
-- CloudFrontディストリビューションのAliasが設定されていない
+
+- DNS レコードの設定ミス
+- CloudFront ディストリビューションの Alias が設定されていない
 
 **解決方法**:
 
@@ -810,9 +832,10 @@ aws cloudfront get-distribution --id YOUR_DISTRIBUTION_ID \
 
 #### 5. デプロイが完了しない
 
-**CloudFrontのデプロイには時間がかかる**:
-- 通常15〜20分
-- 変更内容によっては30分以上
+**CloudFront のデプロイには時間がかかる**:
+
+- 通常 15〜20 分
+- 変更内容によっては 30 分以上
 
 **確認方法**:
 
@@ -826,7 +849,7 @@ aws cloudfront get-distribution --id YOUR_DISTRIBUTION_ID \
 
 ### デバッグツール
 
-**1. CloudFrontのレスポンスヘッダー**
+**1. CloudFront のレスポンスヘッダー**
 
 ```bash
 curl -I https://d123456.cloudfront.net/
@@ -837,7 +860,7 @@ curl -I https://d123456.cloudfront.net/
 # X-Amz-Cf-Pop: NRT57-C1（エッジロケーション）
 ```
 
-**2. CloudWatchログ**
+**2. CloudWatch ログ**
 
 ```hcl
 resource "aws_cloudfront_distribution" "s3_distribution" {
@@ -902,33 +925,33 @@ aws cloudwatch get-metric-statistics \
 
 ### セキュリティ
 
-✅ OAC（Origin Access Control）を使用してS3を保護  
-✅ AWS WAFを統合して攻撃を防御  
-✅ TLSv1.2以上を使用  
-✅ 適切なCORSヘッダーを設定  
+✅ OAC（Origin Access Control）を使用して S3 を保護  
+✅ AWS WAF を統合して攻撃を防御  
+✅ TLSv1.2 以上を使用  
+✅ 適切な CORS ヘッダーを設定  
 ✅ 地域制限で不要なアクセスをブロック
 
 ### パフォーマンス
 
 ✅ 圧縮を有効化  
-✅ HTTP/2・HTTP/3を有効化  
-✅ 適切なキャッシュTTLを設定  
-✅ Cache-Controlヘッダーを最適化  
-✅ Origin Shieldでキャッシュヒット率を向上
+✅ HTTP/2・HTTP/3 を有効化  
+✅ 適切なキャッシュ TTL を設定  
+✅ Cache-Control ヘッダーを最適化  
+✅ Origin Shield でキャッシュヒット率を向上
 
 ### コスト
 
-✅ 長めのTTLでキャッシュヒット率を向上  
-✅ 適切なPrice Classを選択  
+✅ 長めの TTL でキャッシュヒット率を向上  
+✅ 適切な Price Class を選択  
 ✅ バージョニングで無効化を最小化  
 ✅ 不要なログを無効化  
-✅ CloudWatch Alarmでコストを監視
+✅ CloudWatch Alarm でコストを監視
 
 ### 運用
 
 ✅ Infrastructure as Code（Terraform）で管理  
 ✅ ログを有効化して分析  
-✅ CloudWatchでメトリクスを監視  
+✅ CloudWatch でメトリクスを監視  
 ✅ 定期的にキャッシュヒット率を確認  
 ✅ デプロイ前にステージング環境でテスト
 
@@ -936,13 +959,13 @@ aws cloudwatch get-metric-statistics \
 
 ## 参考リソース
 
-### AWS公式ドキュメント
+### AWS 公式ドキュメント
 
-- [Amazon CloudFront開発者ガイド](https://docs.aws.amazon.com/ja_jp/cloudfront/)
-- [CloudFront料金](https://aws.amazon.com/jp/cloudfront/pricing/)
+- [Amazon CloudFront 開発者ガイド](https://docs.aws.amazon.com/ja_jp/cloudfront/)
+- [CloudFront 料金](https://aws.amazon.com/jp/cloudfront/pricing/)
 - [CloudFront FAQs](https://aws.amazon.com/jp/cloudfront/faqs/)
 
-### Terraformドキュメント
+### Terraform ドキュメント
 
 - [aws_cloudfront_distribution](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudfront_distribution)
 - [aws_cloudfront_origin_access_control](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudfront_origin_access_control)
@@ -956,19 +979,20 @@ aws cloudwatch get-metric-statistics \
 
 ## 次のステップ
 
-1. **基本的なディストリビューションを作成**: S3バケットをオリジンとして設定
-2. **カスタムドメインを設定**: ACM証明書とRoute53の設定
-3. **セキュリティを強化**: OACとWAFの導入
+1. **基本的なディストリビューションを作成**: S3 バケットをオリジンとして設定
+2. **カスタムドメインを設定**: ACM 証明書と Route53 の設定
+3. **セキュリティを強化**: OAC と WAF の導入
 4. **パフォーマンスを最適化**: キャッシュ戦略の調整
-5. **監視を設定**: CloudWatchアラームとログの有効化
+5. **監視を設定**: CloudWatch アラームとログの有効化
 
 ---
 
 ## 関連ドキュメント
 
 このリポジトリ内の関連ドキュメント:
-- `cloudfront.tf` - CloudFrontのTerraform設定
-- `waf.tf` - AWS WAFの設定
+
+- `cloudfront.tf` - CloudFront の Terraform 設定
+- `waf.tf` - AWS WAF の設定
 - `S3/docs/cache-control-strategies.md` - キャッシュ戦略の詳細
 
 ---
