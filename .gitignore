@@ -19,3 +19,6 @@ venv/
 # 画像ファイル（imagesフォルダ内）
 upload_file/images/*
 !upload_file/images/.gitkeep
+
+# zipファイル
+.zip
