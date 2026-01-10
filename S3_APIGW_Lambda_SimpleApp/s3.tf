@@ -42,11 +42,22 @@ resource "aws_s3_bucket_policy" "allow_public_read" {
   })
 }
 
-# Upload index.html
+# Upload HTML files
+# etagにfilemd5を使用することで、ファイル内容が変更された場合に自動的に検知・再アップロードされる
 resource "aws_s3_object" "index_html" {
   bucket       = aws_s3_bucket.frontend.id
   key          = "index.html"
   source       = "${path.module}/src/frontend/index.html"
   content_type = "text/html"
+  # filemd5ハッシュを計算してファイルの整合性を検証
   etag         = filemd5("${path.module}/src/frontend/index.html")
+}
+
+resource "aws_s3_object" "error_html" {
+  bucket       = aws_s3_bucket.frontend.id
+  key          = "error.html"
+  source       = "${path.module}/src/frontend/error.html"
+  content_type = "text/html"
+  # filemd5ハッシュを計算してファイルの整合性を検証
+  etag         = filemd5("${path.module}/src/frontend/error.html")
 }
