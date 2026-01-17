@@ -19,7 +19,7 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-# --- Lambda ZIPファイルの自動ビルド ---
+# --- ビルド実行用のスクリプト（初回とコード変更時） ---
 resource "null_resource" "lambda_build" {
   triggers = {
     handler_hash      = filemd5("${path.module}/lambda_code/handler.py")
@@ -36,16 +36,20 @@ resource "null_resource" "lambda_build" {
 resource "aws_lambda_function" "qr_generator" {
   depends_on = [null_resource.lambda_build]
 
-  filename         = "lambda_function_payload.zip"
+  filename         = "${path.module}/lambda_function_payload.zip"
   function_name    = "qr-generator-${var.environment}"
   role             = aws_iam_role.lambda_exec.arn
   handler          = "handler.lambda_handler"
   runtime          = "python3.13"
-  source_code_hash = filebase64sha256("lambda_function_payload.zip")
+  source_code_hash = null_resource.lambda_build.id
 
   environment {
     variables = {
       LOG_LEVEL = "INFO"
     }
+  }
+
+  lifecycle {
+    replace_triggered_by = [null_resource.lambda_build]
   }
 }

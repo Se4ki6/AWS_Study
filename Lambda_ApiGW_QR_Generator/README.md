@@ -29,10 +29,32 @@ URLを入力するとQRコードを生成して返すサーバーレスAPIです
 - AWS CLIの設定完了（認証情報設定済み）
 - Terraform v1.0以上
 - PowerShell（Windows）またはBash（Linux/Mac）
+- Python 3.13（ビルド用）
+- pip（Pythonパッケージマネージャー）
 
 ### デプロイ手順
 
-#### 1. 環境変数の設定
+#### 1. 初回ビルド（必須）
+
+**初回のみ、Lambdaデプロイパッケージを手動でビルドする必要があります：**
+
+```powershell
+# Windows
+.\script\build.ps1
+
+# Linux/Mac
+./script/build.sh
+```
+
+このスクリプトは以下を実行します：
+
+- `requirements.txt`に記載された依存ライブラリをインストール
+- Lambda関数コード（`handler.py`）と一緒にZIPファイルを作成
+- `lambda_function_payload.zip`を生成
+
+**注意:** 2回目以降は、`terraform apply`時に自動的にビルドされます（`handler.py`または`requirements.txt`に変更があった場合のみ）。
+
+#### 2. 環境変数の設定
 
 `dev.tfvars`または`prod.tfvars`を編集：
 
@@ -42,9 +64,17 @@ aws_region  = "ap-northeast-1"
 is_windows  = true   # Windows環境の場合true、Linux/Macの場合false
 ```
 
-#### 2. Terraformでデプロイ
+#### 2. 環境変数の設定
 
-Terraformが自動でZIPファイルをビルドしてデプロイします：
+`dev.tfvars`または`prod.tfvars`を編集：
+
+```hcl
+environment = "dev"  # または "prod"
+aws_region  = "ap-northeast-1"
+is_windows  = true   # Windows環境の場合true、Linux/Macの場合false
+```
+
+#### 3. Terraformでデプロイ
 
 ```powershell
 # 初期化
@@ -53,13 +83,13 @@ terraform init
 # 計画確認（dev環境の場合）
 terraform plan -var-file="dev.tfvars"
 
-# 適用（ZIPファイルのビルドも自動実行されます）
+# 適用
 terraform apply -var-file="dev.tfvars"
 ```
 
 **注意:** `handler.py`または`requirements.txt`に変更があった場合、Terraformが自動的に再ビルドを実行します。
 
-#### 3. APIエンドポイントの確認
+#### 4. APIエンドポイントの確認
 
 デプロイ完了後、API URLが出力されます：
 

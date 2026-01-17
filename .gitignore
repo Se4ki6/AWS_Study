@@ -25,9 +25,13 @@ __pycache__/
 .venv/
 venv/
 
-# 画像ファイル（imagesフォルダ内）
+# 画像ファイル
 upload_file/images/*
 !upload_file/images/.gitkeep
+*.png
+*.jpg
+*.jpeg
+*.gif
 
 # zipファイル
 *.zip

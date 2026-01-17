@@ -15,12 +15,12 @@ output "api_endpoint_full" {
 
 output "test_command_windows" {
   description = "Test command for Windows"
-  value       = ".\\test.ps1 \"${aws_apigatewayv2_api.lambda_api.api_endpoint}\""
+  value       = "script\test.ps1 \"${aws_apigatewayv2_api.lambda_api.api_endpoint}\""
 }
 
 output "test_command_linux" {
   description = "Test command for Linux/Mac"
-  value       = "./test.sh \"${aws_apigatewayv2_api.lambda_api.api_endpoint}\""
+  value       = "script/test.sh \"${aws_apigatewayv2_api.lambda_api.api_endpoint}\""
 }
 
 output "curl_test_command" {
