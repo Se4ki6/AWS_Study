@@ -1,9 +1,18 @@
+# Lambdaのビルド成果物
+lambda_function_payload.zip
+python_payload/
+
+# Terraform関連
 .terraform/
 .terraform/
 *.tfstate
 *.tfstate.backup
 .terraform.lock.hcl
-terraform.tfvars
+
+# tfvarsファイル（機密情報を含む可能性がある）
+*.tfvars
+
+# GitHub関連
 .github/
 
 # 環境変数ファイル（認証情報を含む）
@@ -21,4 +30,4 @@ upload_file/images/*
 !upload_file/images/.gitkeep
 
 # zipファイル
-.zip
+*.zip
