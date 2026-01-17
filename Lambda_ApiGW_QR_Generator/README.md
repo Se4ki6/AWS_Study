@@ -32,35 +32,19 @@ URLを入力するとQRコードを生成して返すサーバーレスAPIです
 
 ### デプロイ手順
 
-#### 1. 依存関係のパッケージング
-
-**Windows:**
-
-```powershell
-.\script\build.ps1
-```
-
-**Linux/Mac:**
-
-```bash
-./script/build.sh
-```
-
-このスクリプトは以下を自動実行します：
-
-- `requirements.txt`から依存ライブラリをインストール
-- Lambda用のZIPパッケージを作成
-
-#### 2. 環境変数の設定
+#### 1. 環境変数の設定
 
 `dev.tfvars`または`prod.tfvars`を編集：
 
 ```hcl
 environment = "dev"  # または "prod"
 aws_region  = "ap-northeast-1"
+is_windows  = true   # Windows環境の場合true、Linux/Macの場合false
 ```
 
-#### 3. Terraformでデプロイ
+#### 2. Terraformでデプロイ
+
+Terraformが自動でZIPファイルをビルドしてデプロイします：
 
 ```powershell
 # 初期化
@@ -69,11 +53,13 @@ terraform init
 # 計画確認（dev環境の場合）
 terraform plan -var-file="dev.tfvars"
 
-# 適用
+# 適用（ZIPファイルのビルドも自動実行されます）
 terraform apply -var-file="dev.tfvars"
 ```
 
-#### 4. APIエンドポイントの確認
+**注意:** `handler.py`または`requirements.txt`に変更があった場合、Terraformが自動的に再ビルドを実行します。
+
+#### 3. APIエンドポイントの確認
 
 デプロイ完了後、API URLが出力されます：
 
@@ -193,7 +179,6 @@ https://xxxxxxxxxx.execute-api.ap-northeast-1.amazonaws.com/generate?url=https:/
 - [ ] CloudWatch Logsの保持期間設定
 - [ ] API Gatewayのスロットリング設定
 - [ ] main.tfで処理順や関連性を分かりやすく記述
-- [ ] シェルスクリプトのTerraform側での自動実行
 - [ ] ZIPファイルの差分チェック機能（パフォーマンス最適化）
 
 ### 完了済み
@@ -205,8 +190,7 @@ https://xxxxxxxxxx.execute-api.ap-northeast-1.amazonaws.com/generate?url=https:/
 - [x] lambdaフォルダの命名改善（lambda_codeに変更）
 - [x] READMEの作成
 - [x] curlでの疎通確認用テストスクリプト（test.ps1/test.sh）
-- [x] Windows対応（build.ps1作成）
-- [x] lambdaフォルダの命名改善（lambda_codeに変更）
+- [x] シェルスクリプトのTerraform側での自動実行
 
 詳細は [todo.md](../docs/Lambda_ApiGW_QR_Generator/todo.md) を参照してください。
 
@@ -217,16 +201,17 @@ https://xxxxxxxxxx.execute-api.ap-northeast-1.amazonaws.com/generate?url=https:/
 ```
 Lambda_ApiGW_QR_Generator/
 ├── main.tf              # プロバイダー設定
-├── lambda.tf            # Lambda関連リソース定義
+├── lambda.tf            # Lambda関連リソース定義（ZIPビルド自動化含む）
 ├── api_gateway.tf       # API Gateway関連リソース定義
 ├── outputs.tf           # 出力値定義
 ├── variable.tf          # 変数定義
 ├── dev.tfvars           # 開発環境用変数
 ├── prod.tfvars          # 本番環境用変数
-├── build.ps1            # ビルドスクリプト（Windows）
-├── build.sh             # ビルドスクリプト（Linux/Mac）
-├── test.ps1             # API疎通確認テスト（Windows）
-├── test.sh              # API疎通確認テスト（Linux/Mac）
+├── script/
+│   ├── build.ps1        # ビルドスクリプト（Windows）※Terraformから自動実行
+│   ├── build.sh         # ビルドスクリプト（Linux/Mac）※Terraformから自動実行
+│   ├── test.ps1         # API疎通確認テスト（Windows）
+│   └── test.sh          # API疎通確認テスト（Linux/Mac）
 ├── lambda_code/
 │   ├── handler.py       # Lambdaハンドラー
 │   └── requirements.txt # Python依存関係

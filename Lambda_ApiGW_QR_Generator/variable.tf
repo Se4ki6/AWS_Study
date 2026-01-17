@@ -25,3 +25,12 @@ variable "environment" {
   }
 }
 
+# ---------------------------------------------
+# OS Configuration
+# ---------------------------------------------
+variable "is_windows" {
+  description = "Whether the current OS is Windows (true for Windows, false for Linux/Mac)"
+  type        = bool
+  default     = true
+}
+
