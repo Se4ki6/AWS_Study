@@ -1,6 +1,6 @@
 # --- IAM Role ---
 resource "aws_iam_role" "lambda_exec" {
-  name = "qr_generator_lambda_role-" + var.environment
+  name = "qr_generator_lambda_role-${var.environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -22,7 +22,7 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
 # --- Lambda Function ---
 resource "aws_lambda_function" "qr_generator" {
   filename         = "lambda_function_payload.zip"
-  function_name    = "qr-generator-" + var.environment
+  function_name    = "qr-generator-${var.environment}"
   role             = aws_iam_role.lambda_exec.arn
   handler          = "handler.lambda_handler"
   runtime          = "python3.13"

@@ -1,6 +1,6 @@
 # --- API Gateway (HTTP API) ---
 resource "aws_apigatewayv2_api" "lambda_api" {
-  name          = "qr-generator-api-" + var.environment
+  name          = "qr-generator-api-${var.environment}"
   protocol_type = "HTTP"
 }
 

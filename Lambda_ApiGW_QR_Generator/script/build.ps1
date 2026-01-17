@@ -8,10 +8,10 @@ if (Test-Path "lambda_function_payload.zip") { Remove-Item -Force "lambda_functi
 New-Item -ItemType Directory -Path $PKG_DIR
 
 # ライブラリのインストール
-pip install -r lambda/requirements.txt -t $PKG_DIR
+pip install -r lambda_code/requirements.txt -t $PKG_DIR
 
 # ソースコードのコピー
-Copy-Item lambda/handler.py -Destination $PKG_DIR
+Copy-Item lambda_code/handler.py -Destination $PKG_DIR
 
 # ZIP化
 Compress-Archive -Path "$PKG_DIR\*" -DestinationPath "lambda_function_payload.zip"

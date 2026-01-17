@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # ライブラリを一時フォルダにインストールしてzip化するスクリプト
 export PKG_DIR="python_payload"
@@ -6,10 +7,10 @@ rm -rf $PKG_DIR && mkdir $PKG_DIR
 rm -f lambda_function_payload.zip
 
 # ライブラリのインストール
-pip install -r lambda/requirements.txt -t $PKG_DIR
+pip install -r lambda_code/requirements.txt -t $PKG_DIR
 
 # ソースコードのコピー
-cp lambda/handler.py $PKG_DIR
+cp lambda_code/handler.py $PKG_DIR
 
 # zip化
 cd $PKG_DIR

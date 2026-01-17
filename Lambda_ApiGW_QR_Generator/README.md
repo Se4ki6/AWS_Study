@@ -37,13 +37,13 @@ URLを入力するとQRコードを生成して返すサーバーレスAPIです
 **Windows:**
 
 ```powershell
-.\build.ps1
+.\script\build.ps1
 ```
 
 **Linux/Mac:**
 
 ```bash
-./build.sh
+./script/build.sh
 ```
 
 このスクリプトは以下を自動実行します：
@@ -81,15 +81,46 @@ terraform apply -var-file="dev.tfvars"
 api_endpoint = "https://xxxxxxxxxx.execute-api.ap-northeast-1.amazonaws.com/generate"
 ```
 
+### API疎通確認（テスト）
+
+デプロイ後、APIが正常に動作しているか確認できます。
+
+**自動テストスクリプト:**
+
+```powershell
+# Windows
+.\script\test.ps1 "https://xxxxxxxxxx.execute-api.ap-northeast-1.amazonaws.com"
+
+# Linux/Mac
+./script/test.sh "https://xxxxxxxxxx.execute-api.ap-northeast-1.amazonaws.com"
+```
+
+テストスクリプトは以下を確認します：
+
+- HTTPステータスコード200が返るか
+- レスポンスヘッダーの確認
+- 成功/失敗を色付きで表示
+
+**terraform apply後の出力例:**
+
+```
+test_command_windows = ".\test.ps1 \"https://xxxxx.execute-api.ap-northeast-1.amazonaws.com\""
+```
+
+出力されたコマンドをそのままコピー＆ペーストして実行できます。
+
 ### API使用例
+
+**QRコード画像をダウンロード:**
 
 ```powershell
 # curlでリクエスト
 curl "https://xxxxxxxxxx.execute-api.ap-northeast-1.amazonaws.com/generate?url=https://github.com" --output qr.png
 ```
 
-```bash
-# ブラウザから直接アクセス
+**ブラウザから直接アクセス:**
+
+```
 https://xxxxxxxxxx.execute-api.ap-northeast-1.amazonaws.com/generate?url=https://example.com
 ```
 
@@ -162,7 +193,6 @@ https://xxxxxxxxxx.execute-api.ap-northeast-1.amazonaws.com/generate?url=https:/
 - [ ] CloudWatch Logsの保持期間設定
 - [ ] API Gatewayのスロットリング設定
 - [ ] main.tfで処理順や関連性を分かりやすく記述
-- [ ] curlでの疎通確認用エンドポイントURLの自動出力
 - [ ] シェルスクリプトのTerraform側での自動実行
 - [ ] ZIPファイルの差分チェック機能（パフォーマンス最適化）
 
@@ -171,6 +201,10 @@ https://xxxxxxxxxx.execute-api.ap-northeast-1.amazonaws.com/generate?url=https:/
 - [x] リソース名の環境別化（`var.environment`追加）
 - [x] Pythonランタイム更新（python3.13）
 - [x] ZIPファイル管理（.gitignore設定）
+- [x] Windows対応（build.ps1作成）
+- [x] lambdaフォルダの命名改善（lambda_codeに変更）
+- [x] READMEの作成
+- [x] curlでの疎通確認用テストスクリプト（test.ps1/test.sh）
 - [x] Windows対応（build.ps1作成）
 - [x] lambdaフォルダの命名改善（lambda_codeに変更）
 
@@ -191,6 +225,8 @@ Lambda_ApiGW_QR_Generator/
 ├── prod.tfvars          # 本番環境用変数
 ├── build.ps1            # ビルドスクリプト（Windows）
 ├── build.sh             # ビルドスクリプト（Linux/Mac）
+├── test.ps1             # API疎通確認テスト（Windows）
+├── test.sh              # API疎通確認テスト（Linux/Mac）
 ├── lambda_code/
 │   ├── handler.py       # Lambdaハンドラー
 │   └── requirements.txt # Python依存関係
