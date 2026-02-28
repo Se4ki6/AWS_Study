@@ -14,6 +14,8 @@ terraform {
 
 provider "aws" {
   region = "ap-northeast-1" # 東京リージョン
+  // SSO プロファイルを使用
+  profile = "AdministratorAccess-339126664118"
 }
 
 # ---------------------------------------------
