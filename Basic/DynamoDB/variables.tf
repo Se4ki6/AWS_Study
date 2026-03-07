@@ -14,10 +14,11 @@ variable "hash_key" {
   type        = string
 }
 
-# variable "range_key" {
-#   description = "DynamoDBテーブルのソートキーの名前（必要な場合）"
-#   type        = string
-# }
+variable "range_key" {
+  description = "DynamoDBテーブルのソートキーの名前（必要な場合）"
+  type        = string
+  default     = "" # ソートキーが不要な場合は空文字
+}
 
 variable "environment" {
   description = "環境名（例: dev, staging, prod）"
@@ -27,10 +28,4 @@ variable "environment" {
 variable "project_name" {
   description = "プロジェクト名"
   type        = string
-}
-
-variable "attribute_name" {
-  description = "DynamoDBテーブルの追加属性の名前"
-  type        = string
-  default     = "Attribute1" # デフォルトの属性名
 }
