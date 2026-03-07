@@ -22,6 +22,13 @@ resource "aws_amplify_app" "this" {
           - node_modules/**/*
   EOT
 
+  # 例：サブディレクトリをルートとして指定する場合
+  custom_rule {
+    source = "/"
+    target = "/index.html"
+    status = "200"
+  }
+
   # build_spec = <<-EOT
   #   version: 1
   #   frontend:
@@ -35,13 +42,6 @@ resource "aws_amplify_app" "this" {
   #       files:
   #         - '**/*'
   # EOT
-
-  # 例：サブディレクトリをルートとして指定する場合
-  # custom_rule {
-  #   source = "/"
-  #   target = "/public/index.html"
-  #   status = "200"
-  # }
 }
 
 resource "aws_amplify_branch" "main" {
