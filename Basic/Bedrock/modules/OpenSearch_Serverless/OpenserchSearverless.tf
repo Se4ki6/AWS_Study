@@ -40,6 +40,13 @@ resource "aws_iam_role_policy" "bedrock_kb_policy" {
         Effect   = "Allow"
         Action   = ["bedrock:InvokeModel"]
         Resource = ["arn:aws:bedrock:ap-northeast-1::foundation-model/cohere.embed-multilingual-v3"]
+      },
+      {
+        # AWSマーケットプレイスモデル（Cohere）の購読確認権限
+        # マーケットプレイス経由のモデルはこの権限がないと初回呼び出し時にAccessDeniedになる
+        Effect   = "Allow"
+        Action   = ["aws-marketplace:ViewSubscriptions", "aws-marketplace:Subscribe"]
+        Resource = "*"
       }
     ]
   })

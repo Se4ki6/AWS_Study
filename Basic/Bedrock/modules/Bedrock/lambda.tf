@@ -52,6 +52,7 @@ resource "aws_lambda_function" "ingestion_trigger" {
   handler          = "index.handler"
   filename         = data.archive_file.ingestion_trigger_zip.output_path
   source_code_hash = data.archive_file.ingestion_trigger_zip.output_base64sha256
+  timeout          = 30
 
   environment {
     variables = {
