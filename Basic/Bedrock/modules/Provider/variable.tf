@@ -1,4 +1,8 @@
+# ============================================================
+# Provider モジュール 変数定義
+# ============================================================
+
 variable "aws_profile" {
-  description = "The AWS profile to use"
+  description = "~/.aws/credentials に設定されているAWSプロファイル名"
   type        = string
 }
